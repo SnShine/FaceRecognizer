@@ -17,8 +17,8 @@ def saveCropped(img, name):
 
 if __name__== "__main__":
 	# paths to input and output images
-	input_path= "input_images/"
-	output_path= "output_images/"
+	input_path= "test_input/"
+	output_path= "test_output/"
 
 	# load pre-trained frontalface cascade classifier
 	frontal_face= cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
