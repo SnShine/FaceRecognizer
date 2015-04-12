@@ -16,13 +16,13 @@ def saveCropped(img, i):
 	cv2.imwrite(output_path+ str(i)+ ".jpg", img)
 
 if __name__== "__main__":
+	# paths to input and output images
+	input_path= "input_images_new/"
+	output_path= "output_images_new/"
+
 	# load pre-trained frontalface cascade classifier
 	frontal_face= cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
-	input_names= listdir("/home/suryateja/Documents/GitHub/FaceRecognizer/input_images")
-
-	# paths to input and output images
-	input_path= "input_images/"
-	output_path= "output_images/"
+	input_names= listdir("/home/suryateja/Documents/GitHub/FaceRecognizer/"+ input_path)
 
 	i= 1
 	for name in input_names:
