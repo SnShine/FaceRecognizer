@@ -9,16 +9,16 @@ def cropImage(img, box):
 	[p, q, r, s]= box
 	# crop and save the image provided with the co-ordinates of bounding box
 	write_img_color= img[q:q+ s, p:p+ s]
-	saveCropped(write_img_color, i)
+	saveCropped(write_img_color, name)
 
 # save the cropped image at specified location
-def saveCropped(img, i):
-	cv2.imwrite(output_path+ str(i)+ ".jpg", img)
+def saveCropped(img, name):
+	cv2.imwrite(output_path+ name+ ".jpg", img)
 
 if __name__== "__main__":
 	# paths to input and output images
-	input_path= "input_images_new/"
-	output_path= "output_images_new/"
+	input_path= "input_images/"
+	output_path= "output_images/"
 
 	# load pre-trained frontalface cascade classifier
 	frontal_face= cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
