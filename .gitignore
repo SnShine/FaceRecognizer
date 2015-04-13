@@ -2,3 +2,5 @@
 
 *.jpg
 *.png
+
+!Preview.png
