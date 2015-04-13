@@ -5,6 +5,8 @@ BITS Pilani, Hyderabad Campus
 	
 	Real-Time detection & prediction of subjects/persons in
 		video recording by in-built camera.
+	If there is any intruder (trained/ unknown subjects) attack, it posts on your 
+		facebook timeline to notify you and your friends/ neighbours.
 
 Working:
 	Takes images stored in first path and traines faceRecognizer models.
@@ -13,7 +15,7 @@ Working:
 Usage: 
 	face_detrec_video.py <full/path/to/root/images/folder>
 
-Takes two arguments:
+Takes one argument:
 	1. Input folder which contains sub-folders of subjects/ persons.
 		There should be images saved in subfolders which are used to train.
 '''
@@ -23,6 +25,7 @@ import cv2.cv as cv
 import numpy as np
 from os import listdir
 import sys, time
+import requests
 
 def get_images(path, size):
 	'''
@@ -96,6 +99,27 @@ def majority(mylist):
 
 	return ans 
 
+def post_on_facebook(intruder):
+	'''
+	Takes name of intruder and posts on your facebok timeline.
+	You need to get access_token from facebook GraphAPI and paste it below.
+	'''
+	token= "get GraphAPI token with Extended_permission- publish_actions"
+	url= "https://graph.facebook.com/me/feed"
+
+	my_message1= "Surya is not in his room at present and '"+ intruder+ "' entered into his room without permission."
+	my_message2= "PS: This is automatically posted by 'intruder alert system' built by Surya!"
+
+	params= {"access_token": token, "message": my_message1+"\n\n"+my_message2}
+	posted= requests.post(url, params)
+	
+	if str(posted)== "<Response [200]>":
+		print("\tSuccessfully posted on your timeline.")
+	else:
+		print("\tPlease check your token and its permissions.")
+		print("\tYou cannot post same message more than once in a single POST request.")
+
+
 
 if __name__== "__main__":
 	if len(sys.argv)!= 2:
@@ -111,6 +135,8 @@ if __name__== "__main__":
 	
 	counter= 0
 	last_20= [1 for i in range(20)]
+	final_5= []
+	box_text= "Subject: "
 
 	while(True):
 		ret, frame= cap.read()
@@ -118,7 +144,7 @@ if __name__== "__main__":
 		gray_frame = cv2.equalizeHist(gray_frame)
 
 		bBoxes= detect_faces(gray_frame)
-
+		
 		for bBox in bBoxes:
 			(p,q,r,s)= bBox
 			cv2.rectangle(frame, (p,q), (p+r,q+s), (225,0,25), 2)
@@ -132,12 +158,23 @@ if __name__== "__main__":
 
 			'''
 			counter modulo x: changes value of final label for every x frames
-			Use max_label or predicted_label as you wish 
+			Use max_label or predicted_label as you wish to see in the output video. 
+				But, posting on facebook always use max_label as a parameter.
 			'''
 			if counter%10== 0:					
 				max_label= majority(last_20)
-				box_text= format("Subject: "+ people[max_label])
-				#box_text= format("Subject: "+ people[predicted_label])
+				#box_text= format("Subject: "+ people[max_label])
+				box_text= format("Subject: "+ people[predicted_label])
+
+				if counter> 20:
+					print("Will post on facebook timeline if this counter reaches to 5: "+ str(len(final_5)+ 1))
+					final_5.append(max_label)		#it always takes max_label into consideration
+					if len(final_5)== 5:
+						final_label= majority(final_5)
+						print("Intruder is "+ people[final_label])
+						print("Posting on your facebook timeline...")
+						post_on_facebook(people[final_label])
+						final_5= []
 
 			cv2.putText(frame, box_text, (p-20, q-5), cv2.FONT_HERSHEY_PLAIN, 1.3, (25,0,225), 2)
 
@@ -145,7 +182,7 @@ if __name__== "__main__":
 		cv2.imshow("Video Window", frame)
 		counter+= 1
 
-		if (cv2.waitKey(5) & 0xFF== 27):
+		if (cv2.waitKey(5) & 0xFF== 27):	
 			break
 
 	cv2.destroyAllWindows()
