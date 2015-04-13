@@ -15,7 +15,7 @@ import time
 def cropImage(img, box):
 	[p, q, r, s]= box
 	# crop and save the image provided with the co-ordinates of bounding box
-	write_img_color= img[q:q+ s, p:p+ s]
+	write_img_color= img[q:q+ s, p:p+ r]
 	saveCropped(write_img_color, name)
 
 # save the cropped image at specified location

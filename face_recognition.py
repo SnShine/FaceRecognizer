@@ -76,3 +76,4 @@ if __name__== "__main__":
 
 		[predicted_label, predicted_conf]= eigen_model.predict(np.asarray(pre_image))
 		print("Predicted person in the image "+ image_name+ " : "+ people[predicted_label])
+		
