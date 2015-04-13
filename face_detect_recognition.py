@@ -11,7 +11,7 @@ Working:
 Usage: 
 	face_detect_recognition.py <full/path/to/root/images/folder> <full/path/to/images/folder/to/predict>
 
-Takes two arguments: 
+Takes two arguments:
 	1. Input folder which contains sub-folders of subjects/ persons.
 		There should be images saved in subfolders which are used to train.
 	2. Path to a folder consists of images for which we are gonna predict subject.
@@ -19,6 +19,7 @@ Takes two arguments:
 '''
 
 import cv2
+import cv2.cv as cv
 import numpy as np
 from os import listdir
 import sys, time
@@ -74,25 +75,43 @@ if __name__== "__main__":
 	for image_name in listdir(sys.argv[2]):
 		try:
 			color_image= cv2.imread(sys.argv[2]+ "/"+ image_name)
+			[x, y]= color_image.shape[:2]
+			x_factor= (float(y)/x)
+			resize_y= 480
+			
+			color_image= cv2.resize(color_image, (int(resize_y* x_factor), resize_y))
 			#it's better to convert color image to gray scale image rather than reading it from memory again!
 			pre_image= cv2.imread(sys.argv[2]+ "/"+ image_name, cv2.IMREAD_GRAYSCALE)
-			pre_image= cv2.resize(pre_image, (256, 256))
+			pre_image= cv2.resize(pre_image, (int(resize_y* x_factor), resize_y))
 		except:
 			print("Couldn't read image. Please check the path to image file.")
 			sys.exit()
 
 		#starting to detect face in given image
 		frontal_face= cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
-		bBoxes= frontal_face.detectMultiScale(gray_img, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30), flags = cv.CV_HAAR_SCALE_IMAGE)
-
+		#bBoxes= frontal_face.detectMultiScale(pre_image, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30), flags = cv.CV_HAAR_SCALE_IMAGE)
+		bBoxes= frontal_face.detectMultiScale(pre_image, scaleFactor=1.3, minNeighbors=4, minSize=(30, 30), flags = cv.CV_HAAR_SCALE_IMAGE)
+		
 		for bBox in bBoxes:
 			(p,q,r,s)= bBox
-			cv2.rectangle(color_image, (p,q), (p+r,q+s), (225,0,0), 2)
+			cv2.rectangle(color_image, (p,q), (p+r,q+s), (225,0,25), 2)
+			#cv2.rectangle(pre_image, (p,q), (p+r,q+s), (25,0,225), 2)
 
-		cv2.imshow("Win", color_image)
+			#starting to predict subject/ person in cropped (detected) image
+			pre_crop_image= pre_image[q:q+s, p:p+r]
+			pre_crop_image= cv2.resize(pre_crop_image, (256, 256))
+
+			[predicted_label, predicted_conf]= eigen_model.predict(np.asarray(pre_crop_image))
+			print("Predicted person in the image "+ image_name+ " : "+ people[predicted_label])
+
+			box_text= format("Subject: "+ people[predicted_label])
+			#print(box_text)
+
+			cv2.putText(color_image, box_text, (p-20, q-5), cv2.FONT_HERSHEY_PLAIN, 1.1, (25,0,225), 1)
+
+		cv2.imshow("Win1", color_image)
+		#cv2.imshow("Win2", pre_crop_image)
 		cv2.waitKey(0)
 
 		#starting to predict subject/ person in cropped (detected) image
-
-		# [predicted_label, predicted_conf]= eigen_model.predict(np.asarray(pre_crop_image))
-		# print("Predicted person in the image "+ image_name+ " : "+ people[predicted_label])
+		
