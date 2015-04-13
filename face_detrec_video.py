@@ -53,12 +53,20 @@ def get_images(path, size):
 
 	return [images, labels, people]
 
-if __name__== "__main__":
-	if len(sys.argv)!= 2:
-		print("Wrong number of arguments! See the usage.\n")
-		print("Usage: face_detrec_video.py <full/path/to/root/images/folder>")
-		sys.exit()
+def detect_faces(image):
+	'''
+	Takes an image as input and returns an array of bounding box(es).
+	'''
+	frontal_face= cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+	bBoxes= frontal_face.detectMultiScale(image, scaleFactor=1.3, minNeighbors=4, minSize=(30, 30), flags = cv.CV_HAAR_SCALE_IMAGE)
 
+	return bBoxes
+
+def train_model(path):
+	'''
+	Takes path to images and train a face recognition model 
+	Returns trained model and people
+	'''
 	[images, labels, people]= get_images(sys.argv[1], (256, 256))
 	#print([images, labels])
 
@@ -71,15 +79,45 @@ if __name__== "__main__":
 	eigen_model.train(images, labels)
 	print("\tSuccessfully completed training in "+ str(time.clock()- sttime)+ " Secs!")
 
+	return [eigen_model, people]
+
+def majority(mylist):
+	'''
+	Takes a list and returns an element which has highest frequency in the given list.
+	'''
+	myset= set(mylist)
+	ans= mylist[0]
+	ans_f= mylist.count(ans)
+
+	for i in myset:
+		if mylist.count(i)> ans_f:
+			ans= i
+			ans_f= mylist.count(i)
+
+	return ans 
+
+
+if __name__== "__main__":
+	if len(sys.argv)!= 2:
+		print("Wrong number of arguments! See the usage.\n")
+		print("Usage: face_detrec_video.py <full/path/to/root/images/folder>")
+		sys.exit()
+
+	arg_one= sys.argv[1]
+	eigen_model, people= train_model(arg_one)
+
 	#starts recording video from camera and detects & predict subjects
 	cap= cv2.VideoCapture(0)
+	
+	counter= 0
+	last_20= [1 for i in range(20)]
+
 	while(True):
 		ret, frame= cap.read()
 		gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		gray_frame = cv2.equalizeHist(gray_frame)
 
-		frontal_face= cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
-		bBoxes= frontal_face.detectMultiScale(gray_frame, scaleFactor=1.3, minNeighbors=4, minSize=(30, 30), flags = cv.CV_HAAR_SCALE_IMAGE)
+		bBoxes= detect_faces(gray_frame)
 
 		for bBox in bBoxes:
 			(p,q,r,s)= bBox
@@ -89,18 +127,25 @@ if __name__== "__main__":
 			crop_gray_frame= cv2.resize(crop_gray_frame, (256, 256))
 
 			[predicted_label, predicted_conf]= eigen_model.predict(np.asarray(crop_gray_frame))
-			#print("Predicted person in the image "+ image_name+ " : "+ people[predicted_label])
+			last_20.append(predicted_label)
+			last_20= last_20[1:]
 
-			box_text= format("Subject: "+ people[predicted_label])
-			#print(box_text)
+			'''
+			counter modulo x: changes value of final label for every x frames
+			Use max_label or predicted_label as you wish 
+			'''
+			if counter%10== 0:					
+				max_label= majority(last_20)
+				box_text= format("Subject: "+ people[max_label])
+				#box_text= format("Subject: "+ people[predicted_label])
 
-			cv2.putText(frame, box_text, (p-20, q-5), cv2.FONT_HERSHEY_PLAIN, 1.1, (25,0,225), 1)
+			cv2.putText(frame, box_text, (p-20, q-5), cv2.FONT_HERSHEY_PLAIN, 1.3, (25,0,225), 2)
 
 
-		cv2.imshow("Capture", frame)
-		#cv2.imshow("gray1", gray_frame)
+		cv2.imshow("Video Window", frame)
+		counter+= 1
 
-		if cv2.waitKey(5) & 0xFF== 27:
+		if (cv2.waitKey(5) & 0xFF== 27):
 			break
 
 	cv2.destroyAllWindows()
