@@ -2,6 +2,11 @@
 # shine123surya[at]gmail[dot]com
 # BITS Pilani, Hyderabad Campus
 
+'''
+Takes all the images in "input_path" and analyses them for any faces.
+If face(s) is(are) found, it crops and saves them at "output_path".
+'''
+
 import cv2
 from os import listdir
 
