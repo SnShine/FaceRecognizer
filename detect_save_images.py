@@ -1,14 +1,16 @@
-# Surya Teja Cheedella
-# shine123surya[at]gmail[dot]com
-# BITS Pilani, Hyderabad Campus
-
 '''
+Surya Teja Cheedella
+shine123surya[at]gmail[dot]com
+BITS Pilani, Hyderabad Campus
+
 Takes all the images in "input_path" and analyses them for any faces.
 If face(s) is(are) found, it crops and saves them at "output_path".
 '''
 
 import cv2
+import cv2.cv as cv
 from os import listdir
+import time
 
 def cropImage(img, box):
 	[p, q, r, s]= box
@@ -22,13 +24,15 @@ def saveCropped(img, name):
 
 if __name__== "__main__":
 	# paths to input and output images
-	input_path= "test_input/"
-	output_path= "test_output/"
+	input_path= "old/input_images/"
+	output_path= "old/output_images/"
 
 	# load pre-trained frontalface cascade classifier
 	frontal_face= cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 	input_names= listdir("/home/suryateja/Documents/GitHub/FaceRecognizer/"+ input_path)
 
+	print("Starting to detect faces in images and save the cropped images to output file...")
+	sttime= time.clock()
 	i= 1
 	for name in input_names:
 		print(input_path+name)
@@ -37,11 +41,13 @@ if __name__== "__main__":
 		gray_img= cv2.cvtColor(color_img, cv2.COLOR_BGR2GRAY)
 
 		# find the bounding boxes around detected faces in images
-		bBoxes= frontal_face.detectMultiScale(gray_img, 1.3, 5)
-		print(bBoxes)
+		bBoxes= frontal_face.detectMultiScale(gray_img, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30), flags = cv.CV_HAAR_SCALE_IMAGE)
+		#print(bBoxes)
 
 		for box in bBoxes:
 			#print(box)
 			# crop and save the image at specified location
 			cropImage(color_img, box)
 			i+= 1
+
+	print("Successfully completed the task in %.2f Secs." % (time.clock()- sttime))

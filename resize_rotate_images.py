@@ -1,8 +1,8 @@
-# Surya Teja Cheedella
-# shine123surya[at]gmail[dot]com
-# BITS Pilani, Hyderabad Campus
-
 '''
+Surya Teja Cheedella
+shine123surya[at]gmail[dot]com
+BITS Pilani, Hyderabad Campus
+
 Takes all the images in "input_path" and rotates & resizes them with given parameters.
 Modified images are saved at "output_path".
 '''
