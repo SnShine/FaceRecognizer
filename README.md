@@ -9,7 +9,7 @@ If there is any intruder (trained/ unknown subjects) attack, it automatically po
 ## Preview
 Screen-shot while detecting & predicting subject(s) in real-time video. 
 
-![alt tag](https://raw.githubusercontent.com/SnShine/FaceRecognizer/master/Preview.png)
+![alt tag](https://raw.githubusercontent.com/SnShine/FaceRecognizer/master/Preview1.png)
 
 ## Usage of available files
 
