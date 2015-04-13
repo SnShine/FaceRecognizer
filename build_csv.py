@@ -2,6 +2,11 @@
 # shine123surya[at]gmail[dot]com
 # BITS Pilani, Hyderabad Campus
 
+'''
+Takes all the images in folder which contains sub-folders of subjects/persons.
+Writes path to image files and labes (starting from 0) to a csv file.
+'''
+
 from os import listdir
 
 if __name__== "__main__":
