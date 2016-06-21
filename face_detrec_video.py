@@ -2,17 +2,17 @@
 Surya Teja Cheedella
 shine123surya[at]gmail[dot]com
 BITS Pilani, Hyderabad Campus
-    
+
     Real-Time detection & prediction of subjects/persons in
         video recording by in-built camera.
-    If there is any intruder (trained/ unknown subjects) attack, it posts on your 
+    If there is any intruder (trained/ unknown subjects) attack, it posts on your
         facebook timeline to notify you and your friends/ neighbours.
 
 Working:
     Takes images stored in first path and traines faceRecognizer models.
     Then starts recording video from camera and shows detected subjects.
 
-Usage: 
+Usage:
     face_detrec_video.py <full/path/to/root/images/folder>
 
 Takes one argument:
@@ -67,7 +67,7 @@ def detect_faces(image):
 
 def train_model(path):
     '''
-    Takes path to images and train a face recognition model 
+    Takes path to images and train a face recognition model
     Returns trained model and people
     '''
     [images, labels, people]= get_images(sys.argv[1], (256, 256))
@@ -97,14 +97,15 @@ def majority(mylist):
             ans= i
             ans_f= mylist.count(i)
 
-    return ans 
+    return ans
 
 def post_on_facebook(intruder, counter, picture_name):
     '''
     Takes name of intruder and posts on your facebok timeline.
     You need to get access_token from facebook GraphAPI and paste it below.
     '''
-    token= "CAACEdEose0cBAPza2l1D5ZCWB3uaRlxivSuZADmshFq1Rzsd7rNp7SKq5x7XiZBjKrXvqXL5dGIYriujVsSSIZBZAuZAk3q3k0tPeNJ2IUzoZAc5hOkvwMhVZBteluWiw1Nvf0fdS8B0CE4fXMUOEBl2Dm4pwnXWglUTSDXxidOyoacUZByaZBPKZAPTbILdZCuB4tAtgeuXO7IydnjNhBZA7z1KJFKvNHEXXTjsZD"
+    # has a life time of 1 hr. So, no use even if you steal this 😜
+    token= "CAACEdEose0cBAPr3Hjm3zudDaDg0CHZBbWj9TBKyBJH6NSXkNYT9nCqvMnp5rdjjBStMkt8aiicc22tyZBs5wb8g4jZCg2wfoBQUc8C7p38VoZBQWRgbZAZCQ8MDjeBFZBxvs5Ex0X0QhKor3ZAJMZBvjWXFx0Rdd6lDdhuwvfZCeaKRbM4kTyXbZCwHpXmsj6kX4bJ1ZA5JDMZBdLXJYeV9Bl1zM"
     url= "https://graph.facebook.com/me/feed"
 
     graph= facebook.GraphAPI(access_token= token)
@@ -112,11 +113,11 @@ def post_on_facebook(intruder, counter, picture_name):
     my_message1= "Surya is not in his room at present and '"+ intruder+ "' entered into his room without permission."
     my_message2= "PS: This is automatically posted by 'intruder alert system' built by Surya!\n"
     final_message= my_message1+"\n\n"+my_message2+ "\n"+ str(counter)
-    
+
     #post on facebook using requests.
     # params= {"access_token": token, "message": final_message}
     # posted= requests.post(url, params)
-    
+
     # if str(posted)== "<Response [200]>":
     #     print("\tSuccessfully posted on your timeline.")
     # else:
@@ -139,7 +140,7 @@ if __name__== "__main__":
 
     #starts recording video from camera and detects & predict subjects
     cap= cv2.VideoCapture(0)
-    
+
     counter= 0
     last_20= [1 for i in range(20)]
     final_5= []
@@ -151,11 +152,11 @@ if __name__== "__main__":
         gray_frame = cv2.equalizeHist(gray_frame)
 
         bBoxes= detect_faces(gray_frame)
-        
+
         for bBox in bBoxes:
             (p,q,r,s)= bBox
             cv2.rectangle(frame, (p,q), (p+r,q+s), (225,0,25), 2)
-            
+
             crop_gray_frame= gray_frame[q:q+s, p:p+r]
             crop_gray_frame= cv2.resize(crop_gray_frame, (256, 256))
 
@@ -165,13 +166,13 @@ if __name__== "__main__":
 
             '''
             counter modulo x: changes value of final label for every x frames
-            Use max_label or predicted_label as you wish to see in the output video. 
+            Use max_label or predicted_label as you wish to see in the output video.
                 But, posting on facebook always use max_label as a parameter.
             '''
 
             cv2.putText(frame, box_text, (p-20, q-5), cv2.FONT_HERSHEY_PLAIN, 1.3, (25,0,225), 2)
-            
-            if counter%10== 0:                  
+
+            if counter%10== 0:
                 max_label= majority(last_20)
                 #box_text= format("Subject: "+ people[max_label])
                 box_text= format("Subject: "+ people[predicted_label])
@@ -188,13 +189,13 @@ if __name__== "__main__":
                         post_on_facebook(people[final_label], counter, picture_name)
                         final_5= []
 
-            
+
 
 
         cv2.imshow("Video Window", frame)
         counter+= 1
 
-        if (cv2.waitKey(5) & 0xFF== 27):    
+        if (cv2.waitKey(5) & 0xFF== 27):
             break
 
     cv2.destroyAllWindows()

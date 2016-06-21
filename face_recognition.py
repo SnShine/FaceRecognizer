@@ -4,7 +4,7 @@ shine123surya[at]gmail[dot]com
 BITS Pilani, Hyderabad Campus
 
 Usage: face_recognition.py <full/path/to/root/images/folder> <full/path/to/images/folder/to/predict>
-Takes two arguments: 
+Takes two arguments:
 	1. Input folder which contains sub-folders of subjects/ persons.
 		There should be images saved in subfolders which are used to train.
 	2. Path to a folder consists of images for which we are gonna predict subject.
@@ -76,4 +76,3 @@ if __name__== "__main__":
 
 		[predicted_label, predicted_conf]= eigen_model.predict(np.asarray(pre_image))
 		print("Predicted person in the image "+ image_name+ " : "+ people[predicted_label])
-		

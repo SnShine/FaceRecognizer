@@ -5,10 +5,10 @@ BITS Pilani, Hyderabad Campus
 
 Working:
 	Takes images stored in first path and traines faceRecognizer models.
-	For every image in second path, it first detects faces in images and 
+	For every image in second path, it first detects faces in images and
 		then predicts subject/person with the help of trained model.
 
-Usage: 
+Usage:
 	face_detect_recognition.py <full/path/to/root/images/folder> <full/path/to/images/folder/to/predict>
 
 Takes two arguments:
@@ -78,7 +78,7 @@ if __name__== "__main__":
 			[x, y]= color_image.shape[:2]
 			x_factor= (float(y)/x)
 			resize_y= 480
-			
+
 			color_image= cv2.resize(color_image, (int(resize_y* x_factor), resize_y))
 			#it's better to convert color image to gray scale image rather than reading it from memory again!
 			pre_image= cv2.imread(sys.argv[2]+ "/"+ image_name, cv2.IMREAD_GRAYSCALE)
@@ -91,7 +91,7 @@ if __name__== "__main__":
 		frontal_face= cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 		#bBoxes= frontal_face.detectMultiScale(pre_image, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30), flags = cv.CV_HAAR_SCALE_IMAGE)
 		bBoxes= frontal_face.detectMultiScale(pre_image, scaleFactor=1.3, minNeighbors=4, minSize=(30, 30), flags = cv.CV_HAAR_SCALE_IMAGE)
-		
+
 		for bBox in bBoxes:
 			(p,q,r,s)= bBox
 			cv2.rectangle(color_image, (p,q), (p+r,q+s), (225,0,25), 2)
@@ -114,4 +114,3 @@ if __name__== "__main__":
 		cv2.waitKey(0)
 
 		#starting to predict subject/ person in cropped (detected) image
-		
