@@ -5,3 +5,6 @@
 
 !Preview1.png
 !Preview2.png
+!input_images/*
+!output_images/*
+!sorted_output_images/*/*

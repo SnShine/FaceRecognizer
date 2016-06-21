@@ -4,12 +4,15 @@ A face recognition algorithm written in Python.
 
 Real-Time detection & prediction of subjects/persons in video recording with built-in camera.
 
-If there is any intruder (trained/ unknown subjects) attack, it automatically posts on your Facebook timeline to notify you and your friends/ neighbors.
+If there is any intruder (known/ unknown subjects) attack, it automatically posts on your Facebook timeline to notify you and your friends/neighbors.
 
 ## Preview
 Screen-shot while detecting & predicting subject(s) in real-time video.
 
 ![alt tag](../master/Preview1.png)
+
+Screen-shot of Facebook post regarding intruder attack.
+
 ![alt tag](../master/Preview2.png)
 
 ## Usage of available files
