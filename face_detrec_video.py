@@ -23,7 +23,7 @@ Takes one argument:
 import cv2
 import cv2.cv as cv
 import numpy as np
-from os import listdir
+import os
 import sys, time
 import requests, facebook
 
@@ -39,10 +39,10 @@ def get_images(path, size):
     images, labels= [], []
     people= []
 
-    for subdir in listdir(path):
-        for image in listdir(path+ "/"+ subdir):
+    for subdir in os.listdir(path):
+        for image in os.listdir(path+ "/"+ subdir):
             #print(subdir, images)
-            img= cv2.imread(path+"/"+subdir+"/"+image, cv2.IMREAD_GRAYSCALE)
+            img= cv2.imread(path+os.path.sep+subdir+os.path.sep+image, cv2.IMREAD_GRAYSCALE)
             img= cv2.resize(img, size)
 
             images.append(np.asarray(img, dtype= np.uint8))
