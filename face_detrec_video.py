@@ -142,7 +142,7 @@ if __name__== "__main__":
     cap= cv2.VideoCapture(0)
 
     counter= 0
-    last_20= [1 for i in range(20)]
+    last_20= [0 for i in range(20)]
     final_5= []
     box_text= "Subject: "
 
